@@ -1,7 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { resolvePhotoSrc } from "@/lib/userPhoto";
+
+export const dynamic = "force-dynamic";
 
 export default async function MatchesPage() {
   const session = await auth();
@@ -45,7 +47,15 @@ export default async function MatchesPage() {
                 >
                   <div className="relative h-14 w-14 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-900">
                     {other.photoPath ? (
-                      <Image src={other.photoPath} alt="" fill className="object-cover" sizes="56px" />
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={resolvePhotoSrc(other.photoPath) ?? other.photoPath}
+                        alt=""
+                        width={56}
+                        height={56}
+                        decoding="async"
+                        className="absolute inset-0 h-full w-full object-cover"
+                      />
                     ) : null}
                   </div>
                   <div className="min-w-0 flex-1">

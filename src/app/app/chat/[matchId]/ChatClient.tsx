@@ -16,7 +16,7 @@ export function ChatClient({ matchId }: { matchId: string }) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
   const load = useCallback(async () => {
-    const res = await fetch(`/api/messages?matchId=${encodeURIComponent(matchId)}`);
+    const res = await fetch(`/api/messages?matchId=${encodeURIComponent(matchId)}`, { cache: "no-store" });
     const data = await res.json();
     if (!res.ok) {
       setError(data.error ?? "Não foi possível abrir o chat.");

@@ -1,7 +1,9 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
+import { jsonNoStore } from "@/lib/jsonNoStore";
 import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
 
 const getSchema = z.object({
   matchId: z.string().min(1),
@@ -15,13 +17,13 @@ const postSchema = z.object({
 export async function GET(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
-    return NextResponse.json({ error: "Não autenticado." }, { status: 401 });
+    return jsonNoStore({ error: "Não autenticado." }, { status: 401 });
   }
 
   const { searchParams } = new URL(req.url);
   const parsed = getSchema.safeParse({ matchId: searchParams.get("matchId") });
   if (!parsed.success) {
-    return NextResponse.json({ error: "matchId obrigatório." }, { status: 400 });
+    return jsonNoStore({ error: "matchId obrigatório." }, { status: 400 });
   }
 
   const { matchId } = parsed.data;
@@ -39,7 +41,7 @@ export async function GET(req: Request) {
   });
 
   if (!match) {
-    return NextResponse.json({ error: "Match não encontrado." }, { status: 404 });
+    return jsonNoStore({ error: "Match não encontrado." }, { status: 404 });
   }
 
   const messages = await prisma.message.findMany({
@@ -58,7 +60,7 @@ export async function GET(req: Request) {
     },
   });
 
-  return NextResponse.json({
+  return jsonNoStore({
     messages,
     other,
     billing: {
@@ -71,13 +73,13 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
-    return NextResponse.json({ error: "Não autenticado." }, { status: 401 });
+    return jsonNoStore({ error: "Não autenticado." }, { status: 401 });
   }
 
   const json = await req.json().catch(() => null);
   const parsed = postSchema.safeParse(json);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Mensagem inválida." }, { status: 400 });
+    return jsonNoStore({ error: "Mensagem inválida." }, { status: 400 });
   }
 
   const me = session.user.id;
@@ -91,14 +93,14 @@ export async function POST(req: Request) {
   });
 
   if (!match) {
-    return NextResponse.json({ error: "Match não encontrado." }, { status: 404 });
+    return jsonNoStore({ error: "Match não encontrado." }, { status: 404 });
   }
 
   const user = await prisma.user.findUniqueOrThrow({ where: { id: me } });
 
   if (!user.subscriptionActive) {
     if (user.freeMessagesLeft <= 0) {
-      return NextResponse.json(
+      return jsonNoStore(
         {
           error: "Suas 25 mensagens grátis acabaram. Assine para continuar.",
           code: "QUOTA_EXCEEDED",
@@ -123,7 +125,7 @@ export async function POST(req: Request) {
     select: { subscriptionActive: true, freeMessagesLeft: true },
   });
 
-  return NextResponse.json({
+  return jsonNoStore({
     message,
     billing: {
       subscriptionActive: updated.subscriptionActive,

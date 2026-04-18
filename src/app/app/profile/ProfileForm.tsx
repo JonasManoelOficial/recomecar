@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { isUserUpload, resolvePhotoSrc } from "@/lib/userPhoto";
 
 type User = {
   email: string;
@@ -36,7 +37,7 @@ export function ProfileForm() {
 
   useEffect(() => {
     void (async () => {
-      const res = await fetch("/api/profile");
+      const res = await fetch("/api/profile", { cache: "no-store" });
       const data = await res.json();
       if (!res.ok) return;
       const u = data.user as User;
@@ -95,6 +96,7 @@ export function ProfileForm() {
     }
 
     const res = await fetch("/api/profile", {
+      cache: "no-store",
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -106,7 +108,7 @@ export function ProfileForm() {
       return;
     }
     setMsg("Salvo.");
-    const refreshed = await fetch("/api/profile");
+    const refreshed = await fetch("/api/profile", { cache: "no-store" });
     const data = await refreshed.json();
     if (refreshed.ok) {
       const u = data.user as User;
@@ -125,13 +127,16 @@ export function ProfileForm() {
 
   const upload = async (file: File) => {
     setMsg(null);
-    if (file.size > 2_000_000) {
+    const maxBytes = 5_000_000;
+    if (file.size > maxBytes) {
       setMsg(
-        `Imagem demasiado grande (${Math.round(file.size / 1024)}KB). Reduza para no máximo 2MB (comprime ou redimensiona).`,
+        `Imagem demasiado grande (${Math.round(file.size / 1024)}KB). Reduza para no máximo ${Math.round(maxBytes / 1_000_000)}MB (comprime ou redimensiona).`,
       );
       return;
     }
-    if (!file.type.startsWith("image/")) {
+    const looksLikeImage =
+      file.type.startsWith("image/") || file.type === "" || file.type === "application/octet-stream";
+    if (!looksLikeImage) {
       setMsg(
         "Este ficheiro não parece ser uma imagem. Guarde como JPEG/PNG (no telemóvel, use “Guardar imagem”, não um print da página).",
       );
@@ -139,7 +144,7 @@ export function ProfileForm() {
     }
     const fd = new FormData();
     fd.set("file", file);
-    const res = await fetch("/api/upload", { method: "POST", body: fd });
+    const res = await fetch("/api/upload", { method: "POST", body: fd, cache: "no-store" });
     const raw = await res.text();
     let data: { error?: string; photoPath?: string } | null = null;
     try {
@@ -164,7 +169,7 @@ export function ProfileForm() {
     setMsg(null);
     const fd = new FormData();
     fd.set("presetPath", presetPath);
-    const res = await fetch("/api/upload", { method: "POST", body: fd });
+    const res = await fetch("/api/upload", { method: "POST", body: fd, cache: "no-store" });
     const raw = await res.text();
     let data: { error?: string; photoPath?: string } | null = null;
     try {
@@ -192,7 +197,19 @@ export function ProfileForm() {
       <div className="flex items-center gap-4">
         <div className="relative h-24 w-24 overflow-hidden rounded-full border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
           {user.photoPath ? (
-            <Image src={user.photoPath} alt="" fill className="object-cover" sizes="96px" />
+            isUserUpload(user.photoPath) ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={resolvePhotoSrc(user.photoPath) ?? user.photoPath}
+                alt=""
+                width={96}
+                height={96}
+                decoding="async"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : (
+              <Image src={user.photoPath} alt="" fill className="object-cover" sizes="96px" />
+            )
           ) : (
             <div className="flex h-full items-center justify-center text-xs text-zinc-500">Sem foto</div>
           )}

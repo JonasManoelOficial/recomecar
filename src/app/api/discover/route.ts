@@ -1,11 +1,13 @@
-import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { jsonNoStore } from "@/lib/jsonNoStore";
 import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   const session = await auth();
   if (!session?.user?.id) {
-    return NextResponse.json({ error: "Não autenticado." }, { status: 401 });
+    return jsonNoStore({ error: "Não autenticado." }, { status: 401 });
   }
 
   const me = session.user.id;
@@ -32,9 +34,9 @@ export async function GET() {
   });
 
   if (!candidates.length) {
-    return NextResponse.json({ profile: null });
+    return jsonNoStore({ profile: null });
   }
 
   const profile = candidates[Math.floor(Math.random() * candidates.length)];
-  return NextResponse.json({ profile });
+  return jsonNoStore({ profile });
 }

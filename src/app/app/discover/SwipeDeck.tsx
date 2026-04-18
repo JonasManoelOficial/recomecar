@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { resolvePhotoSrc } from "@/lib/userPhoto";
 
 type Profile = {
   id: string;
@@ -24,7 +24,7 @@ export function SwipeDeck() {
     setLoading(true);
     setNote(null);
     try {
-      const res = await fetch("/api/discover");
+      const res = await fetch("/api/discover", { cache: "no-store" });
       const data = await res.json();
       setProfile(data.profile ?? null);
     } catch {
@@ -100,13 +100,15 @@ export function SwipeDeck() {
       <article className="overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
         <div className="relative aspect-[3/4] w-full bg-zinc-100 dark:bg-zinc-900">
           {profile.photoPath ? (
-            <Image
-              src={profile.photoPath}
+            // eslint-disable-next-line @next/next/no-img-element -- /api/photo + evita cache do optimizer
+            <img
+              src={resolvePhotoSrc(profile.photoPath) ?? profile.photoPath}
               alt={profile.name ?? "Foto de perfil"}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 420px"
-              priority
+              width={800}
+              height={1067}
+              decoding="async"
+              fetchPriority="high"
+              className="absolute inset-0 h-full w-full object-cover"
             />
           ) : (
             <div className="flex h-full items-center justify-center text-sm text-zinc-500">

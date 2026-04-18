@@ -1,7 +1,9 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
+import { jsonNoStore } from "@/lib/jsonNoStore";
 import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
 
 const patchSchema = z.object({
   name: z.string().min(1).max(80).optional(),
@@ -21,7 +23,7 @@ const patchSchema = z.object({
 export async function GET() {
   const session = await auth();
   if (!session?.user?.id) {
-    return NextResponse.json({ error: "Não autenticado." }, { status: 401 });
+    return jsonNoStore({ error: "Não autenticado." }, { status: 401 });
   }
 
   const user = await prisma.user.findUniqueOrThrow({
@@ -40,19 +42,19 @@ export async function GET() {
     },
   });
 
-  return NextResponse.json({ user });
+  return jsonNoStore({ user });
 }
 
 export async function PATCH(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
-    return NextResponse.json({ error: "Não autenticado." }, { status: 401 });
+    return jsonNoStore({ error: "Não autenticado." }, { status: 401 });
   }
 
   const json = await req.json().catch(() => null);
   const parsed = patchSchema.safeParse(json);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Dados inválidos." }, { status: 400 });
+    return jsonNoStore({ error: "Dados inválidos." }, { status: 400 });
   }
 
   const data = parsed.data;
@@ -68,18 +70,18 @@ export async function PATCH(req: Request) {
     const m = data.birthMonth;
     const d = data.birthDay;
     if (y == null || m == null || d == null) {
-      return NextResponse.json({ error: "Data de nascimento incompleta." }, { status: 400 });
+      return jsonNoStore({ error: "Data de nascimento incompleta." }, { status: 400 });
     }
 
     const birth = new Date(y, m - 1, d);
     if (birth.getFullYear() !== y || birth.getMonth() !== m - 1 || birth.getDate() !== d) {
-      return NextResponse.json({ error: "Data de nascimento inválida." }, { status: 400 });
+      return jsonNoStore({ error: "Data de nascimento inválida." }, { status: 400 });
     }
 
     const today = new Date();
     const minAgeDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
     if (birth > minAgeDate) {
-      return NextResponse.json({ error: "É necessário ter pelo menos 18 anos." }, { status: 400 });
+      return jsonNoStore({ error: "É necessário ter pelo menos 18 anos." }, { status: 400 });
     }
   }
 
@@ -101,5 +103,5 @@ export async function PATCH(req: Request) {
     },
   });
 
-  return NextResponse.json({ ok: true });
+  return jsonNoStore({ ok: true });
 }
