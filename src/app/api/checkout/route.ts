@@ -42,9 +42,8 @@ export async function POST(req: Request) {
     select: { id: true, email: true },
   });
 
-  const checkout = await stripe.checkout.sessions.create({
+  const baseSession: Parameters<typeof stripe.checkout.sessions.create>[0] = {
     mode: "subscription",
-    payment_method_types: ["card", "pix"],
     line_items: [{ price: priceId, quantity: 1 }],
     success_url: `${baseUrl}/app/plan?checkout=success`,
     cancel_url: `${baseUrl}/app/plan?checkout=cancel`,
@@ -54,7 +53,38 @@ export async function POST(req: Request) {
     subscription_data: {
       metadata: { userId: user.id, plan },
     },
-  });
+  };
+
+  let checkout;
+  try {
+    checkout = await stripe.checkout.sessions.create({
+      ...baseSession,
+      payment_method_types: ["card", "pix"],
+    });
+  } catch (e: unknown) {
+    const err = e as { message?: string; type?: string; code?: string; decline_code?: string };
+    // Pix + subscription pode ser indisponível dependendo da conta Stripe/requisitos
+    if (err?.message && err.message.toLowerCase().includes("payment_method_type")) {
+      try {
+        checkout = await stripe.checkout.sessions.create({
+          ...baseSession,
+          payment_method_types: ["card"],
+        });
+      } catch {
+        return NextResponse.json(
+          {
+            error: `Falha ao abrir o checkout no Stripe. Detalhe: ${err?.message ?? "erro desconhecido"}`,
+          },
+          { status: 502 },
+        );
+      }
+    } else {
+      return NextResponse.json(
+        { error: `Falha ao abrir o checkout no Stripe. Detalhe: ${err?.message ?? "erro desconhecido"}` },
+        { status: 502 },
+      );
+    }
+  }
 
   if (!checkout.url) {
     return NextResponse.json({ error: "Não foi possível criar o checkout." }, { status: 500 });
