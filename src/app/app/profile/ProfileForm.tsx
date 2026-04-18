@@ -140,12 +140,18 @@ export function ProfileForm() {
     const fd = new FormData();
     fd.set("file", file);
     const res = await fetch("/api/upload", { method: "POST", body: fd });
-    const data = (await res.json().catch(() => ({}))) as { error?: string; photoPath?: string };
+    const raw = await res.text();
+    let data: { error?: string; photoPath?: string } | null = null;
+    try {
+      data = raw ? (JSON.parse(raw) as { error?: string; photoPath?: string }) : null;
+    } catch {
+      data = null;
+    }
     if (!res.ok) {
-      setMsg(data.error ?? "Falha no upload.");
+      setMsg(data?.error ?? (raw ? `Falha no upload (${res.status}).` : `Falha no upload (${res.status}).`));
       return;
     }
-    if (!data.photoPath) {
+    if (!data?.photoPath) {
       setMsg("Falha no upload.");
       return;
     }
@@ -159,12 +165,18 @@ export function ProfileForm() {
     const fd = new FormData();
     fd.set("presetPath", presetPath);
     const res = await fetch("/api/upload", { method: "POST", body: fd });
-    const data = await res.json();
+    const raw = await res.text();
+    let data: { error?: string; photoPath?: string } | null = null;
+    try {
+      data = raw ? (JSON.parse(raw) as { error?: string; photoPath?: string }) : null;
+    } catch {
+      data = null;
+    }
     if (!res.ok) {
-      setMsg(data.error ?? "Não foi possível usar essa foto.");
+      setMsg(data?.error ?? `Não foi possível usar essa foto (${res.status}).`);
       return;
     }
-    if (!data.photoPath) {
+    if (!data?.photoPath) {
       setMsg("Não foi possível usar essa foto.");
       return;
     }

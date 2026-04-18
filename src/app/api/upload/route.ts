@@ -19,59 +19,76 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Não autenticado." }, { status: 401 });
   }
 
-  const form = await req.formData();
-  const presetPath = form.get("presetPath");
-  if (typeof presetPath === "string" && presetPhotos.has(presetPath)) {
+  try {
+    const form = await req.formData();
+    const presetPath = form.get("presetPath");
+    if (typeof presetPath === "string" && presetPhotos.has(presetPath)) {
+      await prisma.user.update({
+        where: { id: session.user.id },
+        data: { photoPath: presetPath },
+      });
+      return NextResponse.json({ photoPath: presetPath });
+    }
+
+    const file = form.get("file");
+
+    if (!(file instanceof File)) {
+      return NextResponse.json({ error: "Arquivo ausente." }, { status: 400 });
+    }
+
+    if (!file.type.startsWith("image/")) {
+      return NextResponse.json(
+        {
+          error:
+            "O ficheiro não foi reconhecido como imagem. Tente JPEG ou PNG (e evite descarregar a página do site em vez da imagem).",
+        },
+        { status: 400 },
+      );
+    }
+
+    if (file.size > 2_000_000) {
+      return NextResponse.json(
+        { error: `Imagem demasiado grande (${Math.round(file.size / 1024)}KB). Máximo 2MB.` },
+        { status: 400 },
+      );
+    }
+
+    const ext =
+      file.type === "image/png"
+        ? "png"
+        : file.type === "image/webp"
+          ? "webp"
+          : file.type === "image/gif"
+            ? "gif"
+            : "jpg";
+    const filename = `${session.user.id}.${ext}`;
+    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    await mkdir(uploadDir, { recursive: true });
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+    await writeFile(path.join(uploadDir, filename), buffer);
+
+    const photoPath = `/uploads/${filename}`;
     await prisma.user.update({
       where: { id: session.user.id },
-      data: { photoPath: presetPath },
+      data: { photoPath },
     });
-    return NextResponse.json({ photoPath: presetPath });
-  }
 
-  const file = form.get("file");
-
-  if (!(file instanceof File)) {
-    return NextResponse.json({ error: "Arquivo ausente." }, { status: 400 });
-  }
-
-  if (!file.type.startsWith("image/")) {
+    return NextResponse.json({ photoPath });
+  } catch (e: unknown) {
+    const err = e as { code?: string; message?: string };
+    if (err?.code === "EACCES" || err?.code === "EPERM") {
+      return NextResponse.json(
+        { error: "Sem permissão para gravar a imagem no servidor (pasta public/uploads)." },
+        { status: 500 },
+      );
+    }
+    if (err?.code === "ENOSPC") {
+      return NextResponse.json({ error: "Disco cheio no servidor." }, { status: 507 });
+    }
     return NextResponse.json(
-      {
-        error:
-          "O ficheiro não foi reconhecido como imagem. Tente JPEG ou PNG (e evite descarregar a página do site em vez da imagem).",
-      },
-      { status: 400 },
+      { error: `Falha ao guardar imagem. Detalhe: ${err?.message ?? "erro desconhecido"}` },
+      { status: 500 },
     );
   }
-
-  if (file.size > 2_000_000) {
-    return NextResponse.json(
-      { error: `Imagem demasiado grande (${Math.round(file.size / 1024)}KB). Máximo 2MB.` },
-      { status: 400 },
-    );
-  }
-
-  const ext =
-    file.type === "image/png"
-      ? "png"
-      : file.type === "image/webp"
-        ? "webp"
-        : file.type === "image/gif"
-          ? "gif"
-          : "jpg";
-  const filename = `${session.user.id}.${ext}`;
-  const uploadDir = path.join(process.cwd(), "public", "uploads");
-  await mkdir(uploadDir, { recursive: true });
-
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(uploadDir, filename), buffer);
-
-  const photoPath = `/uploads/${filename}`;
-  await prisma.user.update({
-    where: { id: session.user.id },
-    data: { photoPath },
-  });
-
-  return NextResponse.json({ photoPath });
 }
