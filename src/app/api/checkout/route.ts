@@ -55,30 +55,40 @@ export async function POST(req: Request) {
     },
   };
 
+  const enablePix = process.env.STRIPE_ENABLE_PIX === "true";
+
   let checkout;
-  try {
-    checkout = await stripe.checkout.sessions.create({
-      ...baseSession,
-      payment_method_types: ["card", "pix"],
-    });
-  } catch (e: unknown) {
-    const err = e as { message?: string; type?: string; code?: string; decline_code?: string };
-    // Pix + subscription pode ser indisponível dependendo da conta Stripe/requisitos
-    if (err?.message && err.message.toLowerCase().includes("payment_method_type")) {
-      try {
+  if (enablePix) {
+    try {
+      checkout = await stripe.checkout.sessions.create({
+        ...baseSession,
+        payment_method_types: ["card", "pix"],
+      });
+    } catch (e: unknown) {
+      const err = e as { message?: string };
+      const msg = (err?.message ?? "").toLowerCase();
+      const looksLikePixUnsupported =
+        msg.includes("pix") && (msg.includes("invalid") || msg.includes("not activated") || msg.includes("activate"));
+      if (looksLikePixUnsupported) {
         checkout = await stripe.checkout.sessions.create({
           ...baseSession,
           payment_method_types: ["card"],
         });
-      } catch {
+      } else {
         return NextResponse.json(
-          {
-            error: `Falha ao abrir o checkout no Stripe. Detalhe: ${err?.message ?? "erro desconhecido"}`,
-          },
+          { error: `Falha ao abrir o checkout no Stripe. Detalhe: ${err?.message ?? "erro desconhecido"}` },
           { status: 502 },
         );
       }
-    } else {
+    }
+  } else {
+    try {
+      checkout = await stripe.checkout.sessions.create({
+        ...baseSession,
+        payment_method_types: ["card"],
+      });
+    } catch (e: unknown) {
+      const err = e as { message?: string };
       return NextResponse.json(
         { error: `Falha ao abrir o checkout no Stripe. Detalhe: ${err?.message ?? "erro desconhecido"}` },
         { status: 502 },
