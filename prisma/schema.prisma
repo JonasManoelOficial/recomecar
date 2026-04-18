@@ -13,6 +13,8 @@ model User {
   passwordHash String
   name         String?
   birthYear    Int?
+  birthMonth   Int?
+  birthDay     Int?
   bio          String?
   photoPath    String?
   city         String?

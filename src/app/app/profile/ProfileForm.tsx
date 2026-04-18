@@ -9,6 +9,8 @@ type User = {
   bio: string | null;
   city: string | null;
   birthYear: number | null;
+  birthMonth: number | null;
+  birthDay: number | null;
   photoPath: string | null;
   freeMessagesLeft: number;
   subscriptionActive: boolean;
@@ -42,7 +44,15 @@ export function ProfileForm() {
       setName(u.name ?? "");
       setBio(u.bio ?? "");
       setCity(u.city ?? "");
-      setBirthDate(u.birthYear ? `01/01/${u.birthYear}` : "");
+      if (u.birthYear && u.birthMonth && u.birthDay) {
+        const dd = String(u.birthDay).padStart(2, "0");
+        const mm = String(u.birthMonth).padStart(2, "0");
+        setBirthDate(`${dd}/${mm}/${u.birthYear}`);
+      } else if (u.birthYear) {
+        setBirthDate(`01/01/${u.birthYear}`);
+      } else {
+        setBirthDate("");
+      }
     })();
   }, []);
 
@@ -63,7 +73,7 @@ export function ProfileForm() {
       const month = Number(digits.slice(2, 4));
       const year = Number(digits.slice(4, 8));
       const minYear = 1900;
-      const maxYear = new Date().getFullYear() - 18;
+      const maxYear = new Date().getFullYear();
 
       if (day < 1 || day > 31 || month < 1 || month > 12 || year < minYear || year > maxYear) {
         setSaving(false);
@@ -72,8 +82,12 @@ export function ProfileForm() {
       }
 
       payload.birthYear = year;
+      payload.birthMonth = month;
+      payload.birthDay = day;
     } else if (digits.length === 0) {
       payload.birthYear = null;
+      payload.birthMonth = null;
+      payload.birthDay = null;
     } else {
       setSaving(false);
       setMsg("Complete a data de nascimento no formato dd/mm/aaaa.");
@@ -87,10 +101,26 @@ export function ProfileForm() {
     });
     setSaving(false);
     if (!res.ok) {
-      setMsg("Não foi possível salvar.");
+      const err = await res.json().catch(() => null);
+      setMsg(typeof err?.error === "string" ? err.error : "Não foi possível salvar.");
       return;
     }
     setMsg("Salvo.");
+    const refreshed = await fetch("/api/profile");
+    const data = await refreshed.json();
+    if (refreshed.ok) {
+      const u = data.user as User;
+      setUser(u);
+      if (u.birthYear && u.birthMonth && u.birthDay) {
+        const dd = String(u.birthDay).padStart(2, "0");
+        const mm = String(u.birthMonth).padStart(2, "0");
+        setBirthDate(`${dd}/${mm}/${u.birthYear}`);
+      } else if (u.birthYear) {
+        setBirthDate(`01/01/${u.birthYear}`);
+      } else {
+        setBirthDate("");
+      }
+    }
   };
 
   const upload = async (file: File) => {
@@ -216,7 +246,9 @@ export function ProfileForm() {
         </label>
       </div>
 
-      {msg ? <p className="text-sm text-zinc-700 dark:text-zinc-200">{msg}</p> : null}
+      <div aria-live="polite" className="min-h-[1.25rem] text-sm text-zinc-700 dark:text-zinc-200">
+        {msg ?? (saving ? "Salvando…" : "\u00a0")}
+      </div>
 
       <button
         type="button"
@@ -224,7 +256,7 @@ export function ProfileForm() {
         onClick={() => void save()}
         className="rounded-2xl bg-rose-600 py-3 text-sm font-semibold text-white hover:bg-rose-700 disabled:opacity-50"
       >
-        Salvar perfil
+        {saving ? "Salvando…" : "Salvar perfil"}
       </button>
     </div>
   );
