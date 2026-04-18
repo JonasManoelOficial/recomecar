@@ -23,14 +23,23 @@ export function SubscribeButton() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan }),
       });
-      const data = await res.json();
+      const raw = await res.text();
+      let data: { error?: string; url?: string } | null = null;
+      try {
+        data = raw ? (JSON.parse(raw) as { error?: string; url?: string }) : null;
+      } catch {
+        data = null;
+      }
       if (!res.ok) {
-        setError(data.error ?? "Não foi possível iniciar o checkout.");
+        setError(
+          data?.error ??
+            (raw ? `Falha (${res.status}): resposta inesperada do servidor.` : `Falha (${res.status}).`),
+        );
         return;
       }
-      if (data.url) window.location.href = data.url as string;
+      if (data?.url) window.location.href = data.url;
     } catch {
-      setError("Erro de rede.");
+      setError("Não foi possível contactar o servidor. Verifica a tua ligação ou tenta de novo em instantes.");
     } finally {
       setLoadingPlan(null);
     }
