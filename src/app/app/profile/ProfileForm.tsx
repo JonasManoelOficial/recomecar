@@ -125,15 +125,32 @@ export function ProfileForm() {
 
   const upload = async (file: File) => {
     setMsg(null);
+    if (file.size > 2_000_000) {
+      setMsg(
+        `Imagem demasiado grande (${Math.round(file.size / 1024)}KB). Reduza para no máximo 2MB (comprime ou redimensiona).`,
+      );
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      setMsg(
+        "Este ficheiro não parece ser uma imagem. Guarde como JPEG/PNG (no telemóvel, use “Guardar imagem”, não um print da página).",
+      );
+      return;
+    }
     const fd = new FormData();
     fd.set("file", file);
     const res = await fetch("/api/upload", { method: "POST", body: fd });
-    const data = await res.json();
+    const data = (await res.json().catch(() => ({}))) as { error?: string; photoPath?: string };
     if (!res.ok) {
       setMsg(data.error ?? "Falha no upload.");
       return;
     }
-    setUser((u) => (u ? { ...u, photoPath: data.photoPath } : u));
+    if (!data.photoPath) {
+      setMsg("Falha no upload.");
+      return;
+    }
+    const photoPath = data.photoPath;
+    setUser((u) => (u ? { ...u, photoPath } : u));
     setMsg("Foto atualizada.");
   };
 
@@ -147,7 +164,12 @@ export function ProfileForm() {
       setMsg(data.error ?? "Não foi possível usar essa foto.");
       return;
     }
-    setUser((u) => (u ? { ...u, photoPath: data.photoPath } : u));
+    if (!data.photoPath) {
+      setMsg("Não foi possível usar essa foto.");
+      return;
+    }
+    const photoPath = data.photoPath;
+    setUser((u) => (u ? { ...u, photoPath } : u));
     setMsg("Foto atualizada.");
   };
 

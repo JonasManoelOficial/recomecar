@@ -31,11 +31,14 @@ export default async function PlanPage({
       ) : null}
 
       <section className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Plano mensal (MVP)</h2>
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">Planos de assinatura</h2>
         <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-zinc-700 dark:text-zinc-200">
+          <li>Semanal: R$ 6,90</li>
+          <li>Mensal: R$ 19,90</li>
+          <li>Anual: R$ 229,90</li>
           <li>Cobrança recorrente via Stripe (cartão).</li>
           <li>Webhook atualiza o status automaticamente após o pagamento.</li>
-          <li>Para o público BR, você pode trocar o provedor depois (ex.: Pagar.me) mantendo a mesma ideia.</li>
+          <li>Escolha o plano e finalize no checkout seguro.</li>
         </ul>
         <div className="mt-5">
           <SubscribeButton />

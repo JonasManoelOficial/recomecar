@@ -36,14 +36,30 @@ export async function POST(req: Request) {
   }
 
   if (!file.type.startsWith("image/")) {
-    return NextResponse.json({ error: "Envie uma imagem." }, { status: 400 });
+    return NextResponse.json(
+      {
+        error:
+          "O ficheiro não foi reconhecido como imagem. Tente JPEG ou PNG (e evite descarregar a página do site em vez da imagem).",
+      },
+      { status: 400 },
+    );
   }
 
   if (file.size > 2_000_000) {
-    return NextResponse.json({ error: "Imagem até 2MB." }, { status: 400 });
+    return NextResponse.json(
+      { error: `Imagem demasiado grande (${Math.round(file.size / 1024)}KB). Máximo 2MB.` },
+      { status: 400 },
+    );
   }
 
-  const ext = file.type === "image/png" ? "png" : "jpg";
+  const ext =
+    file.type === "image/png"
+      ? "png"
+      : file.type === "image/webp"
+        ? "webp"
+        : file.type === "image/gif"
+          ? "gif"
+          : "jpg";
   const filename = `${session.user.id}.${ext}`;
   const uploadDir = path.join(process.cwd(), "public", "uploads");
   await mkdir(uploadDir, { recursive: true });
