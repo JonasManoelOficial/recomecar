@@ -4,6 +4,15 @@ import path from "node:path";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
+const presetPhotos = new Set([
+  "/avatars/avatar-1.svg",
+  "/avatars/avatar-2.svg",
+  "/avatars/avatar-3.svg",
+  "/avatars/avatar-4.svg",
+  "/avatars/avatar-5.svg",
+  "/avatars/avatar-6.svg",
+]);
+
 export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -11,6 +20,15 @@ export async function POST(req: Request) {
   }
 
   const form = await req.formData();
+  const presetPath = form.get("presetPath");
+  if (typeof presetPath === "string" && presetPhotos.has(presetPath)) {
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { photoPath: presetPath },
+    });
+    return NextResponse.json({ photoPath: presetPath });
+  }
+
   const file = form.get("file");
 
   if (!(file instanceof File)) {
