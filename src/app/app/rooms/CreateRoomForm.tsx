@@ -67,7 +67,7 @@ export function CreateRoomForm() {
       <button
         type="submit"
         disabled={loading}
-        className="mt-3 w-full rounded-xl bg-rose-600 py-2.5 text-sm font-semibold text-white hover:bg-rose-700 disabled:opacity-50 sm:w-auto sm:px-6"
+        className="mt-3 w-full rounded-xl bg-brand-600 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50 sm:w-auto sm:px-6"
       >
         {loading ? "Criando…" : "Criar sala"}
       </button>

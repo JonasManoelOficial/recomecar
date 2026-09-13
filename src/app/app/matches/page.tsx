@@ -43,7 +43,7 @@ export default async function MatchesPage() {
               <li key={m.id}>
                 <Link
                   href={`/app/chat/${m.id}`}
-                  className="flex gap-3 rounded-2xl border border-zinc-200 bg-white p-3 hover:border-rose-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-rose-700"
+                  className="flex gap-3 rounded-2xl border border-zinc-200 bg-white p-3 hover:border-brand-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-brand-700"
                 >
                   <div className="relative h-14 w-14 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-900">
                     {other.photoPath ? (

@@ -1,21 +1,24 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import { Providers } from "@/components/Providers";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const sans = Plus_Jakarta_Sans({
+  variable: "--font-recomecar-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const display = Fraunces({
+  variable: "--font-recomecar-display",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Recomeçar — encontros na web",
-  description: "Cadastro, matches, chat e assinatura mensal. 25 mensagens grátis para testar.",
+  title: "Recomeçar — uma nova história pode começar hoje",
+  description:
+    "Conheça pessoas, crie conexões e descubra novas possibilidades. O Recomeçar é uma plataforma de relacionamento feita para quem acredita em novas chances.",
 };
 
 export default function RootLayout({
@@ -24,8 +27,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col bg-zinc-50 text-zinc-950 dark:bg-black dark:text-zinc-50">
+    <html lang="pt-BR" className={`${sans.variable} ${display.variable} h-full antialiased`}>
+      <body className="flex min-h-full flex-col bg-background text-foreground">
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -79,7 +79,7 @@ export function SwipeDeck() {
         <button
           type="button"
           onClick={() => void load()}
-          className="mt-4 rounded-full bg-rose-600 px-5 py-2 text-sm font-medium text-white hover:bg-rose-700"
+          className="mt-4 rounded-full bg-brand-600 px-5 py-2 text-sm font-medium text-white hover:bg-brand-700"
         >
           Tentar de novo
         </button>
@@ -139,7 +139,7 @@ export function SwipeDeck() {
           type="button"
           disabled={busy}
           onClick={() => void swipe("LIKE")}
-          className="rounded-2xl bg-rose-600 py-3 text-sm font-semibold text-white hover:bg-rose-700 disabled:opacity-50"
+          className="rounded-2xl bg-brand-600 py-3 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50"
         >
           Curtir
         </button>

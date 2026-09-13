@@ -59,7 +59,7 @@ export function SubscribeButton() {
             type="button"
             disabled={loadingPlan !== null}
             onClick={() => void start(plan.id)}
-            className="rounded-2xl bg-rose-600 px-4 py-3 text-sm font-semibold text-white hover:bg-rose-700 disabled:opacity-50"
+            className="rounded-2xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50"
           >
             {loadingPlan === plan.id ? "Abrindo checkout…" : `${plan.label} - ${plan.price}`}
           </button>

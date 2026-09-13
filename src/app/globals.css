@@ -1,26 +1,101 @@
 @import "tailwindcss";
 
+/*
+  Identidade visual do RECOMEÇAR.
+  Paleta "amanhecer": verde-azulado profundo (confiança, segurança) + âmbar
+  quente (esperança, recomeço). Evita o rosa/vermelho típico de outros apps.
+*/
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fbfaf7;
+  --foreground: #14232a;
+
+  --brand-50: #e9f5f5;
+  --brand-100: #cfe9e9;
+  --brand-200: #a4d5d7;
+  --brand-300: #6dbabd;
+  --brand-400: #2f979d;
+  --brand-500: #0e7c86;
+  --brand-600: #0b626b;
+  --brand-700: #094e56;
+  --brand-800: #073b41;
+  --brand-900: #052b30;
+
+  --sunrise-100: #fdefdc;
+  --sunrise-200: #fbdcb2;
+  --sunrise-300: #f8c281;
+  --sunrise-400: #f5a65a;
+  --sunrise-500: #ef8b3c;
+  --sunrise-600: #d96f22;
+
+  --ink-50: #f5f6f6;
+  --ink-100: #e7eaeb;
+  --ink-200: #ccd3d5;
+  --ink-400: #7d8f94;
+  --ink-600: #4b6068;
+  --ink-800: #22363d;
+  --ink-900: #14232a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #08181d;
+    --foreground: #eef4f4;
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-brand-800: var(--brand-800);
+  --color-brand-900: var(--brand-900);
+
+  --color-sunrise-100: var(--sunrise-100);
+  --color-sunrise-200: var(--sunrise-200);
+  --color-sunrise-300: var(--sunrise-300);
+  --color-sunrise-400: var(--sunrise-400);
+  --color-sunrise-500: var(--sunrise-500);
+  --color-sunrise-600: var(--sunrise-600);
+
+  --color-ink-50: var(--ink-50);
+  --color-ink-100: var(--ink-100);
+  --color-ink-200: var(--ink-200);
+  --color-ink-400: var(--ink-400);
+  --color-ink-600: var(--ink-600);
+  --color-ink-800: var(--ink-800);
+  --color-ink-900: var(--ink-900);
+
+  --font-sans: var(--font-recomecar-sans);
+  --font-display: var(--font-recomecar-display);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-recomecar-sans), system-ui, sans-serif;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rc-rise {
+    animation: rc-rise 0.6s ease-out both;
+  }
+}
+
+@keyframes rc-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }

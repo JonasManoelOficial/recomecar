@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { auth } from "@/auth";
 import { SignOutButton } from "@/components/SignOutButton";
+import { Logo } from "@/components/brand/Logo";
 
 const links = [
   { href: "/app/discover", label: "Descobrir" },
@@ -20,8 +21,10 @@ export default async function AppSectionLayout({
   return (
     <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col gap-4 px-4 py-6">
       <header className="flex flex-col gap-4 rounded-2xl border border-zinc-200 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/70 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-xs uppercase tracking-wide text-rose-600">Recomeçar</p>
+        <div className="space-y-1">
+          <Link href="/">
+            <Logo size={28} />
+          </Link>
           <p className="text-sm text-zinc-600 dark:text-zinc-300">
             Olá, <span className="font-medium text-zinc-900 dark:text-zinc-50">{session?.user?.name}</span>
           </p>
