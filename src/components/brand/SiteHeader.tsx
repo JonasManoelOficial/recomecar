@@ -10,16 +10,16 @@ export function SiteHeader({ signedIn }: { signedIn: boolean }) {
         </Link>
 
         <nav className="hidden items-center gap-6 text-sm text-ink-600 md:flex">
-          <a className="hover:text-brand-700" href="#funcionalidades">
+          <a className="hover:text-brand-700" href="/#funcionalidades">
             Funcionalidades
           </a>
-          <a className="hover:text-brand-700" href="#como-funciona">
+          <a className="hover:text-brand-700" href="/#como-funciona">
             Como funciona
           </a>
-          <a className="hover:text-brand-700" href="#seguranca">
+          <a className="hover:text-brand-700" href="/#seguranca">
             Segurança
           </a>
-          <a className="hover:text-brand-700" href="#privacidade">
+          <a className="hover:text-brand-700" href="/#privacidade">
             Privacidade
           </a>
         </nav>
