@@ -4,6 +4,7 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Logo } from "@/components/brand/Logo";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -48,9 +49,12 @@ export default function RegisterPage() {
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-16">
       <div>
-        <h1 className="text-3xl font-semibold text-zinc-900 dark:text-zinc-50">Criar conta</h1>
+        <Link href="/" className="mb-6 inline-block">
+          <Logo size={34} />
+        </Link>
+        <h1 className="font-display text-3xl text-ink-900 dark:text-zinc-50">Criar conta</h1>
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-          Já tem conta? <Link className="font-medium text-rose-600 hover:underline" href="/login">Entrar</Link>
+          Já tem conta? <Link className="font-medium text-brand-600 hover:underline" href="/login">Entrar</Link>
         </p>
       </div>
 
@@ -94,7 +98,7 @@ export default function RegisterPage() {
         <button
           type="submit"
           disabled={loading}
-          className="rounded-2xl bg-rose-600 py-3 text-sm font-semibold text-white hover:bg-rose-700 disabled:opacity-50"
+          className="rounded-2xl bg-brand-600 py-3 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50"
         >
           {loading ? "Criando…" : "Criar conta"}
         </button>

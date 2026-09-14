@@ -93,7 +93,7 @@ export function RoomChat({ roomId }: { roomId: string }) {
     <div className="flex min-h-0 flex-1 flex-col gap-3">
       <div className="flex flex-wrap items-start justify-between gap-2 rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
         <div>
-          <p className="text-xs uppercase tracking-wide text-rose-600">Sala pública</p>
+          <p className="text-xs uppercase tracking-wide text-brand-600">Sala pública</p>
           <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">{room.name}</h1>
           {room.description ? (
             <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{room.description}</p>
@@ -135,7 +135,7 @@ export function RoomChat({ roomId }: { roomId: string }) {
         ) : null}
         {messages.map((m) => (
           <div key={m.id} className="rounded-xl bg-zinc-50 px-3 py-2 text-sm dark:bg-zinc-900">
-            <p className="text-xs font-medium text-rose-700 dark:text-rose-300">{m.senderName}</p>
+            <p className="text-xs font-medium text-brand-700 dark:text-brand-300">{m.senderName}</p>
             <p className="text-zinc-900 dark:text-zinc-50">{m.body}</p>
           </div>
         ))}
@@ -148,13 +148,13 @@ export function RoomChat({ roomId }: { roomId: string }) {
           onChange={(e) => setText(e.target.value)}
           placeholder={isMember ? "Mensagem para a sala…" : "Entre na sala para enviar"}
           disabled={!isMember}
-          className="flex-1 rounded-2xl border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-900 outline-none ring-rose-500/30 focus:ring-4 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50"
+          className="flex-1 rounded-2xl border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-900 outline-none ring-brand-500/30 focus:ring-4 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50"
         />
         <button
           type="button"
           onClick={() => void send()}
           disabled={!isMember || !text.trim()}
-          className="rounded-2xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white hover:bg-rose-700 disabled:opacity-50"
+          className="rounded-2xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50"
         >
           Enviar
         </button>

@@ -65,7 +65,7 @@ export function ChatClient({ matchId }: { matchId: string }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3">
       <div className="rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-950">
-        <p className="text-xs uppercase tracking-wide text-rose-600">Chat</p>
+        <p className="text-xs uppercase tracking-wide text-brand-600">Chat</p>
         <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">{other?.name ?? "Match"}</h1>
         {billing ? (
           <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
@@ -101,13 +101,13 @@ export function ChatClient({ matchId }: { matchId: string }) {
           onChange={(e) => setText(e.target.value)}
           placeholder={canSend ? "Escreva uma mensagem…" : "Assine para continuar enviando"}
           disabled={!canSend}
-          className="flex-1 rounded-2xl border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-900 outline-none ring-rose-500/30 focus:ring-4 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50"
+          className="flex-1 rounded-2xl border border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-900 outline-none ring-brand-500/30 focus:ring-4 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50"
         />
         <button
           type="button"
           onClick={() => void send()}
           disabled={!canSend || !text.trim()}
-          className="rounded-2xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white hover:bg-rose-700 disabled:opacity-50"
+          className="rounded-2xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50"
         >
           Enviar
         </button>

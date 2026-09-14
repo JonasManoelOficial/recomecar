@@ -43,7 +43,7 @@ export default async function RoomsPage() {
               <li key={r.id}>
                 <Link
                   href={`/app/rooms/${r.id}`}
-                  className="block rounded-2xl border border-zinc-200 bg-white p-4 hover:border-rose-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-rose-700"
+                  className="block rounded-2xl border border-zinc-200 bg-white p-4 hover:border-brand-300 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-brand-700"
                 >
                   <p className="font-medium text-zinc-900 dark:text-zinc-50">{r.name}</p>
                   {r.description ? (

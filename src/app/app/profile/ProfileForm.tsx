@@ -305,7 +305,7 @@ export function ProfileForm() {
         type="button"
         disabled={saving}
         onClick={() => void save()}
-        className="rounded-2xl bg-rose-600 py-3 text-sm font-semibold text-white hover:bg-rose-700 disabled:opacity-50"
+        className="rounded-2xl bg-brand-600 py-3 text-sm font-semibold text-white hover:bg-brand-700 disabled:opacity-50"
       >
         {saving ? "Salvando…" : "Salvar perfil"}
       </button>
