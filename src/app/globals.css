@@ -34,13 +34,29 @@
   --ink-600: #4b6068;
   --ink-800: #22363d;
   --ink-900: #14232a;
+
+  --surface-light: #fbfaf7;
+  --wordmark: var(--brand-700);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #08181d;
     --foreground: #eef4f4;
+    --wordmark: var(--brand-100);
   }
+}
+
+/*
+  A área pública (landing, termos, privacidade, contato) é sempre clara: a
+  paleta "amanhecer" foi desenhada para fundo claro, com cartões brancos e
+  textos em tons escuros de `ink`.
+*/
+.rc-light {
+  color-scheme: light;
+  background: var(--surface-light);
+  color: var(--ink-900);
+  --wordmark: var(--brand-700);
 }
 
 @theme inline {

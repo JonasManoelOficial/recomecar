@@ -41,7 +41,7 @@ export default async function Home() {
   const session = await auth();
 
   return (
-    <>
+    <div className="rc-light flex flex-1 flex-col">
       <SiteHeader signedIn={Boolean(session)} />
 
       <main className="flex flex-1 flex-col">
@@ -217,6 +217,6 @@ export default async function Home() {
       </main>
 
       <SiteFooter />
-    </>
+    </div>
   );
 }

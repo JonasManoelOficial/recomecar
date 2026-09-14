@@ -49,7 +49,7 @@ export function Logo({ size = 36, withWordmark = true, className = "" }: LogoPro
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
       <LogoMark size={size} />
       {withWordmark ? (
-        <span className="font-display text-lg font-semibold uppercase tracking-[0.18em] text-brand-700 dark:text-brand-100">
+        <span className="font-display text-base font-semibold uppercase tracking-[0.12em] text-[var(--wordmark)] sm:text-lg sm:tracking-[0.18em]">
           Recomeçar
         </span>
       ) : null}
